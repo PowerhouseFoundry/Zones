@@ -84,13 +84,8 @@
     .modal {
       background: #fff;
       width: 100%; height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
-      /* remove top padding to shift content upward */
-      padding-top: 0;
+      display: flex; flex-direction: column; align-items: center;
+      overflow: hidden; position: relative;
     } {
       background: #fff;
       width: 100%; height: 100%;
@@ -102,27 +97,26 @@
       padding-top: 8px;
     }
     .modal .logo {
-      height: 60px;  /* reduced logo size */
-      margin: 0;     /* no extra spacing */
+      height: 40px;
+      margin: 4px 0;
     }
     .modal h2 {
-      font-size: 1.8rem;
-      margin: 0;     /* no extra spacing */
+      font-size: 1.6rem;
+      margin: 2px 0;
     }
     .modal .intro {
       font-size: 1.2rem;
-      margin: 0;     /* remove margins */
+      margin: 2px 0;
     }
     .modal .grid {
-      /* absolute to fill between header/title and button */
       position: absolute;
-      top: 40px;    /* moved up half as much */
-      bottom: 48px; /* above Back button */
-      left: 8px;
-      right: 8px;
+      top: 60px;    /* moves grid up significantly */
+      bottom: 60px; /* leaves space for Back button */
+      left: 4px;
+      right: 4px;
       display: grid;
-      gap: 1px;    /* reduced gap between rows */
-      /* rows determined by JS grid-template-rows */
+      gap: 1px;     /* minimal gap */
+      grid-auto-rows: 1fr;
     }
     .modal .grid img {
       width: 100%;
