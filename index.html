@@ -1,9 +1,9 @@
-<!-- Final Stable Version: Absolute-positioned strategy grid with dynamic calc rows -->
+<!-- Current Working Version: Stable baseline for future updates -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zones of Regulation Check-In</title>
   <style>
     /* RESET */
@@ -11,38 +11,120 @@
     html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
     body { display: flex; flex-direction: column; }
 
-    /* MAIN HEADER */
-    header { position: relative; height: 50px; background: #333; display: flex; align-items: center; justify-content: center; color: #fff; }
-    header .logo { position: absolute; left: 8px; height: 30px; }
-    header h1 { font-size: 1.8rem; }
+    /* HEADER */
+    header {
+      position: relative;
+      height: 50px;
+      background: #333;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+    header .logo {
+      position: absolute; left: 8px; height: 40px;
+    }
+    header h1 {
+      font-size: 1.8rem;
+    }
 
-    /* ZONES GRID */
-    .zones-container { flex: 1; display: grid; grid-template: repeat(2,1fr)/repeat(2,1fr); gap: 4px; padding: 4px; }
-    .zone { background: #ddd; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 8px; overflow: hidden; }
-    .zone .label { color: #fff; font-size: 2rem; text-shadow:1px 1px 2px rgba(0,0,0,0.7); margin-bottom:8px; }
-    .zone .images-row { display: grid; grid-template-columns: repeat(4,1fr); gap:4px; width:100%; height:calc(100% - 3rem); }
-    .zone img.face { width:100%; height:100%; object-fit:contain; }
-    .zone.blue{background:#00a2e8;} .zone.green{background:#79c143;} .zone.yellow{background:#f8e71c;} .zone.red{background:#d0021b;}
+    /* MAIN ZONES GRID */
+    .zones-container {
+      flex: 1;
+      display: grid;
+      grid-template: repeat(2, 1fr) / repeat(2, 1fr);
+      gap: 4px; padding: 4px;
+    }
+    .zone {
+      background: #ccc;
+      border-radius: 8px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer; padding: 8px; overflow: hidden;
+    }
+    .zone .label {
+      color: #fff; font-size: 2rem; font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+      margin-bottom: 8px; text-align: center;
+    }
+    .zone .images-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      width: 100%; height: calc(100% - 3rem);
+    }
+    .zone img.face {
+      width: 100%; height: 100%; object-fit: contain;
+    }
+    .zone.blue   { background: #00a2e8; }
+    .zone.green  { background: #79c143; }
+    .zone.yellow { background: #f8e71c; }
+    .zone.red    { background: #d0021b; }
 
     /* MODAL OVERLAY */
-    #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; }
-    #overlay.visible { display:flex; }
+    #overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none; align-items: center; justify-content: center;
+      z-index: 100;
+    }
+    #overlay.visible { display: flex; }
 
     /* MODAL */
-    .modal { position:relative; width:100%; height:100%; background:#fff; overflow:hidden; }
-    .modal-header { position:absolute; top:0; left:0; right:0; height:50px; background:#eee; display:flex; align-items:center; justify-content:space-between; padding:0 8px; }
-    .modal-header .logo{height:30px;} .modal-header h2{flex:1; text-align:center; font-size:1.6rem; margin:0;} .modal-header button{background:#333;color:#fff;border:none;border-radius:4px;padding:6px 12px;cursor:pointer;}
+    .modal {
+      position: relative;
+      width: 100%; height: 100%;
+      background: #fff;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px; background: #eee;
+    }
+    .modal-header .logo {
+      height: 60px;
+    }
+    .modal-header h2 {
+      font-size: 1.8rem; flex: 1; text-align: center; margin: 0;
+    }
+    .modal-header button {
+      background: #333; color: #fff;
+      border: none; border-radius: 4px;
+      padding: 6px 12px; font-size: 1rem;
+      cursor: pointer;
+    }
+    .modal .intro {
+      text-align: center; padding: 0 8px; font-size: 1.2rem;
+    }
 
     /* STRATEGY GRID */
-    #strategy-grid { position:absolute; top:50px; bottom:0; left:0; right:0; display:grid; gap:2px; padding:2px 4px; overflow:hidden; }
-    #strategy-grid img{width:100%; height:100%; object-fit:contain;}
+    #strategy-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 2px;
+      padding: 8px;
+      overflow: hidden;
+    }
+    /* (we apply the same 4×2 template for every zone—including Red) */
+    #strategy-grid.red {
+      /* still 4 columns × 2 rows */
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    }
+    #strategy-grid img {
+      width: 100%; height: 100%; object-fit: contain;
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo">
+    <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo" />
     <h1>How are you feeling today?</h1>
   </header>
+
   <div class="zones-container">
     <div class="zone blue" data-zone="blue">
       <div class="label">Blue Zone</div>
@@ -65,27 +147,33 @@
   <div id="overlay">
     <div class="modal">
       <div class="modal-header">
-        <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo">
+        <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo" />
         <h2 id="overlay-title">Zone Strategies</h2>
         <button id="close-btn">Back</button>
       </div>
+      <p class="intro">I can…</p>
       <div id="strategy-grid"></div>
     </div>
   </div>
 
   <script>
-    // Data
+    // Face icons for the main page
     const faces = {
-      blue: ['blue1.png','blue2.png','blue3.png','blue4.png'],
-      green: ['green1.png','green2.png','green3.png','green4.png'],
+      blue:   ['blue1.png','blue2.png','blue3.png','blue4.png'],
+      green:  ['green1.png','green2.png','green3.png','green4.png'],
       yellow: ['yellow1.png','yellow2.png','yellow3.png','yellow4.png'],
-      red: ['red1.png','red2.png','red3.png','red4.png']
+      red:    ['red1.png','red2.png','red3.png','red4.png']
     };
+
+    // Strategy icons for modals
     const strategies = {
-      blue: ['b-strat1.png','b-strat2.png','b-strat3.png','b-strat4.png','b-strat5.png','b-strat6.png','b-strat7.png','b-strat8.png'],
-      green: ['g-strat1.png','g-strat2.png','g-strat3.png','g-strat4.png'],
-      yellow: ['y-strat1.png','y-strat2.png','y-strat3.png','y-strat4.png','y-strat5.png','y-strat6.png','y-strat7.png','y-strat8.png'],
-      red: ['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png','r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
+      blue:   ['b-strat1.png','b-strat2.png','b-strat3.png','b-strat4.png',
+               'b-strat5.png','b-strat6.png','b-strat7.png','b-strat8.png'],
+      green:  ['g-strat1.png','g-strat2.png','g-strat3.png','g-strat4.png'],
+      yellow: ['y-strat1.png','y-strat2.png','y-strat3.png','y-strat4.png',
+               'y-strat5.png','y-strat6.png','y-strat7.png','y-strat8.png'],
+      red:    ['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png',
+               'r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
     };
 
     // Render face icons
@@ -99,7 +187,7 @@
       });
     });
 
-    // Modal logic
+    // Modal interactions
     const overlay = document.getElementById('overlay'),
           titleEl = document.getElementById('overlay-title'),
           grid    = document.getElementById('strategy-grid'),
@@ -108,24 +196,32 @@
     document.querySelectorAll('.zone').forEach(zoneEl => {
       zoneEl.addEventListener('click', () => {
         const zone = zoneEl.dataset.zone;
-        titleEl.textContent = `${zone.charAt(0).toUpperCase() + zone.slice(1)} Zone Strategies`;
-        const files = strategies[zone];
-        let cols = (zone === 'green' ? 4 : (zone === 'red' ? 5 : 4));
-        let rows = Math.ceil(files.length/cols);
-        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-        grid.style.gridTemplateRows    = `repeat(${rows}, 1fr)`;
+        titleEl.textContent = `${zone.charAt(0).toUpperCase()+zone.slice(1)} Zone Strategies`;
+
+        // Apply 4×2 grid for all zones
+        grid.className = '';       // reset any previous class
+        grid.classList.add(zone);  // e.g. 'red' → applies #strategy-grid.red rules
+        grid.style.gridTemplateColumns = `repeat(4, 1fr)`;
+        grid.style.gridTemplateRows    = `repeat(2, 1fr)`;
+
         grid.innerHTML = '';
-        files.forEach(f => {
+        strategies[zone].forEach(f => {
           const img = document.createElement('img');
           img.src = `images/strategies/${zone}/${f}`;
           grid.appendChild(img);
         });
+
         overlay.classList.add('visible');
       });
     });
 
-    closeBtn.addEventListener('click', () => overlay.classList.remove('visible'));
-    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('visible'); });
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('visible');
+    });
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('visible');
+    });
   </script>
 </body>
 </html>
