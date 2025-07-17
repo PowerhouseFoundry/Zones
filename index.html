@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zones of Regulation Check-In</title>
   <style>
-    /* Basic Reset */
+    /* RESET */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
     body { display: flex; flex-direction: column; }
 
-    /* Header */
+    /* HEADER */
     header {
       position: relative;
       height: 50px;
@@ -20,10 +20,17 @@
       align-items: center;
       justify-content: center;
     }
-    .logo { position: absolute; left: 8px; height: 50px; }
-    header h1 { color: #fff; font-size: 1.8rem; }
+    header .logo {
+      position: absolute;
+      left: 8px;
+      height: 40px;
+    }
+    header h1 {
+      color: #fff;
+      font-size: 1.8rem;
+    }
 
-    /* Zones Grid */
+    /* ZONES GRID */
     .zones-container {
       flex: 1;
       display: grid;
@@ -40,8 +47,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      padding: 8px;
       overflow: hidden;
+      padding: 8px;
     }
     .zone .label {
       color: #fff;
@@ -56,7 +63,7 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 4px;
       width: 100%;
-      height: calc(100% - 3rem); /* label + padding ~3rem */
+      height: calc(100% - 3rem);
     }
     .zone img.face {
       width: 100%;
@@ -68,71 +75,60 @@
     .zone.yellow { background: #f8e71c; }
     .zone.red { background: #d0021b; }
 
-    /* Modal Overlay */
+    /* MODAL: grid-based layout */
     #overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       background: rgba(0,0,0,0.8);
       display: none;
-      flex-direction: column;
       align-items: center;
-      padding: 8px;
+      justify-content: center;
+      padding: 0;
       z-index: 100;
     }
     #overlay.visible { display: flex; }
     .modal {
       background: #fff;
       width: 100%; height: 100%;
-      display: flex; flex-direction: column; align-items: center;
-      overflow: hidden; position: relative;
-    } {
-      background: #fff;
-      width: 100%; height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      overflow: hidden;
+    }
+    .modal-header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      overflow: hidden;
-      position: relative;
-      padding-top: 8px;
+      padding: 8px;
     }
-    .modal .logo {
-      height: 40px;
+    .modal-header .logo {
+      height: 60px;
+      margin-bottom: 4px;
+    }
+    .modal-header h2 {
+      font-size: 1.8rem;
       margin: 4px 0;
     }
-    .modal h2 {
-      font-size: 1.6rem;
-      margin: 2px 0;
-    }
-    .modal .intro {
+    .modal-header .intro {
       font-size: 1.2rem;
-      margin: 2px 0;
+      margin: 4px 0;
     }
-    .modal .grid {
-      position: absolute;
-      top: 60px;    /* moves grid up significantly */
-      bottom: 60px; /* leaves space for Back button */
-      left: 4px;
-      right: 4px;
+    #strategy-grid {
       display: grid;
-      gap: 1px;     /* minimal gap */
-      grid-auto-rows: 1fr;
+      width: calc(100% - 16px);
+      height: 100%;
+      gap: 2px;
+      padding: 0 8px;
     }
-    .modal .grid img {
+    #strategy-grid img {
       width: 100%;
       height: 100%;
       object-fit: contain;
     }
-    .modal .grid img {
-      width: 100%; height: 100%; object-fit: contain;
-    }
-    .modal .grid img {
-      width: 100%; height: 100%; object-fit: contain;
-    }
     .modal button {
-      position: absolute;
-      top: 8px;
-      right: 8px;
+      justify-self: center;
+      align-self: center;
+      margin: 8px 0;
       padding: 8px 16px;
       background: #333;
       color: #fff;
@@ -168,10 +164,12 @@
   </div>
   <div id="overlay">
     <div class="modal">
-      <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo">
-      <h2 id="overlay-title">Zone Strategies</h2>
-      <p class="intro">I can...</p>
-      <div id="strategy-grid" class="grid"></div>
+      <div class="modal-header">
+        <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo">
+        <h2 id="overlay-title">Zone Strategies</h2>
+        <p class="intro">I can...</p>
+      </div>
+      <div id="strategy-grid"></div>
       <button id="close-btn">Back</button>
     </div>
   </div>
@@ -188,28 +186,30 @@
       yellow: ['y-strat1.png','y-strat2.png','y-strat3.png','y-strat4.png','y-strat5.png','y-strat6.png','y-strat7.png','y-strat8.png'],
       red: ['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png','r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
     };
-    // Render faces
+    // Render face images
     Object.entries(faces).forEach(([zone, files]) => {
-      const container = document.querySelector(`.zone.${zone} .images-row`);
+      const row = document.querySelector(`.zone.${zone} .images-row`);
       files.forEach(f => {
         const img = document.createElement('img');
         img.src = `images/${f}`;
         img.className = 'face';
-        container.appendChild(img);
+        row.appendChild(img);
       });
     });
     // Modal logic
-    const overlay = document.getElementById('overlay'),
-          titleEl = document.getElementById('overlay-title'),
-          grid = document.getElementById('strategy-grid'),
-          closeBtn = document.getElementById('close-btn');
+    const overlay = document.getElementById('overlay');
+    const titleEl = document.getElementById('overlay-title');
+    const grid = document.getElementById('strategy-grid');
+    const closeBtn = document.getElementById('close-btn');
     document.querySelectorAll('.zone').forEach(zoneEl => {
       zoneEl.addEventListener('click', () => {
         const zone = zoneEl.dataset.zone;
         titleEl.textContent = `${zone.charAt(0).toUpperCase() + zone.slice(1)} Zone Strategies`;
         const files = strategies[zone];
-        const cols = (zone === 'green') ? 4 : 5;
-        const rows = Math.ceil(files.length / cols);
+        let cols, rows;
+        if (zone === 'green') { cols = 4; rows = 1; }
+        else if (zone === 'red')   { cols = 3; rows = 3; }
+        else { cols = 4; rows = 2; }
         grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
         grid.innerHTML = '';
