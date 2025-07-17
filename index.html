@@ -1,4 +1,4 @@
-<!-- Current Working Version: Strategy grid gap corrections and cleanup -->
+<!-- Final Stable Version: Absolute-positioned strategy grid with dynamic calc rows -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,96 +12,30 @@
     body { display: flex; flex-direction: column; }
 
     /* MAIN HEADER */
-    header {
-      position: relative;
-      height: 50px;
-      background: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-    }
+    header { position: relative; height: 50px; background: #333; display: flex; align-items: center; justify-content: center; color: #fff; }
     header .logo { position: absolute; left: 8px; height: 30px; }
     header h1 { font-size: 1.8rem; }
 
     /* ZONES GRID */
-    .zones-container {
-      flex: 1;
-      display: grid;
-      grid-template: repeat(2, 1fr) / repeat(2, 1fr);
-      gap: 4px; padding: 4px;
-    }
-    .zone {
-      background: #ddd;
-      border-radius: 8px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      cursor: pointer; overflow: hidden; padding: 8px;
-    }
-    .zone .label {
-      color: #fff; font-size: 2rem; font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-      margin-bottom: 8px; text-align: center;
-    }
-    .zone .images-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
-      width: 100%; height: calc(100% - 3rem);
-    }
-    .zone img.face { width: 100%; height: 100%; object-fit: contain; }
-    .zone.blue   { background: #00a2e8; }
-    .zone.green  { background: #79c143; }
-    .zone.yellow { background: #f8e71c; }
-    .zone.red    { background: #d0021b; }
+    .zones-container { flex: 1; display: grid; grid-template: repeat(2,1fr)/repeat(2,1fr); gap: 4px; padding: 4px; }
+    .zone { background: #ddd; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 8px; overflow: hidden; }
+    .zone .label { color: #fff; font-size: 2rem; text-shadow:1px 1px 2px rgba(0,0,0,0.7); margin-bottom:8px; }
+    .zone .images-row { display: grid; grid-template-columns: repeat(4,1fr); gap:4px; width:100%; height:calc(100% - 3rem); }
+    .zone img.face { width:100%; height:100%; object-fit:contain; }
+    .zone.blue{background:#00a2e8;} .zone.green{background:#79c143;} .zone.yellow{background:#f8e71c;} .zone.red{background:#d0021b;}
 
     /* MODAL OVERLAY */
-    #overlay {
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.8);
-      display: none; align-items: center; justify-content: center;
-      z-index: 100;
-    }
-    #overlay.visible { display: flex; }
+    #overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; }
+    #overlay.visible { display:flex; }
 
-    /* MODAL CONTAINER */
-    .modal {
-      position: relative;
-      width: 100%; height: 100vh;
-      background: #fff; overflow: hidden;
-      display: flex; flex-direction: column;
-    }
+    /* MODAL */
+    .modal { position:relative; width:100%; height:100%; background:#fff; overflow:hidden; }
+    .modal-header { position:absolute; top:0; left:0; right:0; height:50px; background:#eee; display:flex; align-items:center; justify-content:space-between; padding:0 8px; }
+    .modal-header .logo{height:30px;} .modal-header h2{flex:1; text-align:center; font-size:1.6rem; margin:0;} .modal-header button{background:#333;color:#fff;border:none;border-radius:4px;padding:6px 12px;cursor:pointer;}
 
-    /* MODAL HEADER */
-    .modal-header {
-      height: 50px;
-      background: #eee;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 8px;
-      flex: none;
-    }
-    .modal-header .logo { height: 30px; }
-    .modal-header h2 { flex: 1; text-align: center; font-size: 1.6rem; margin: 0; }
-    .modal-header button {
-      background: #333; color: #fff;
-      border: none; border-radius: 4px;
-      padding: 6px 12px; font-size: 1rem;
-      cursor: pointer;
-    }
-
-    /* STRATEGY GRID: anchored between header and bottom */
-    #strategy-grid {
-      position: absolute;
-      top: 50px; bottom: 0;
-      left: 0; right: 0;
-      display: grid;
-      grid-auto-rows: 1fr;
-      gap: 2px 2px !important;   /* 2px row and column gap for tighter layout */
-      padding: 0 !important;     /* remove padding */
-      overflow: hidden;
-    }
-    #strategy-grid img { width: 100%; height: 100%; object-fit: contain; }
+    /* STRATEGY GRID */
+    #strategy-grid { position:absolute; top:50px; bottom:0; left:0; right:0; display:grid; gap:2px; padding:2px 4px; overflow:hidden; }
+    #strategy-grid img{width:100%; height:100%; object-fit:contain;}
   </style>
 </head>
 <body>
@@ -140,48 +74,58 @@
   </div>
 
   <script>
-    // Render faces
+    // Data
     const faces = {
-      blue:['blue1.png','blue2.png','blue3.png','blue4.png'],
-      green:['green1.png','green2.png','green3.png','green4.png'],
-      yellow:['yellow1.png','yellow2.png','yellow3.png','yellow4.png'],
-      red:['red1.png','red2.png','red3.png','red4.png']
+      blue: ['blue1.png','blue2.png','blue3.png','blue4.png'],
+      green: ['green1.png','green2.png','green3.png','green4.png'],
+      yellow: ['yellow1.png','yellow2.png','yellow3.png','yellow4.png'],
+      red: ['red1.png','red2.png','red3.png','red4.png']
     };
-    Object.entries(faces).forEach(([zone,files])=>{
-      const row=document.querySelector(`.zone.${zone} .images-row`);
-      files.forEach(f=>{const img=document.createElement('img');img.src=`images/${f}`;img.className='face';row.appendChild(img);});
+    const strategies = {
+      blue: ['b-strat1.png','b-strat2.png','b-strat3.png','b-strat4.png','b-strat5.png','b-strat6.png','b-strat7.png','b-strat8.png'],
+      green: ['g-strat1.png','g-strat2.png','g-strat3.png','g-strat4.png'],
+      yellow: ['y-strat1.png','y-strat2.png','y-strat3.png','y-strat4.png','y-strat5.png','y-strat6.png','y-strat7.png','y-strat8.png'],
+      red: ['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png','r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
+    };
+
+    // Render face icons
+    Object.entries(faces).forEach(([zone, files]) => {
+      const row = document.querySelector(`.zone.${zone} .images-row`);
+      files.forEach(f => {
+        const img = document.createElement('img');
+        img.src = `images/${f}`;
+        img.className = 'face';
+        row.appendChild(img);
+      });
     });
 
     // Modal logic
-    const overlay=document.getElementById('overlay'),
-          titleEl=document.getElementById('overlay-title'),
-          grid=document.getElementById('strategy-grid'),
-          closeBtn=document.getElementById('close-btn');
+    const overlay = document.getElementById('overlay'),
+          titleEl = document.getElementById('overlay-title'),
+          grid    = document.getElementById('strategy-grid'),
+          closeBtn= document.getElementById('close-btn');
 
-    const strategies={
-      blue:['b-strat1.png','b-strat2.png','b-strat3.png','b-strat4.png','b-strat5.png','b-strat6.png','b-strat7.png','b-strat8.png'],
-      green:['g-strat1.png','g-strat2.png','g-strat3.png','g-strat4.png'],
-      yellow:['y-strat1.png','y-strat2.png','y-strat3.png','y-strat4.png','y-strat5.png','y-strat6.png','y-strat7.png','y-strat8.png'],
-      red:['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png','r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
-    };
-
-    document.querySelectorAll('.zone').forEach(zoneEl=>{
-      zoneEl.addEventListener('click',()=>{
-        const zone=zoneEl.dataset.zone;
-        titleEl.textContent=`${zone.charAt(0).toUpperCase()+zone.slice(1)} Zone Strategies`;
-        const files=strategies[zone];
-        let cols,rows;
-        if(zone==='green'){cols=4;rows=1;}else if(zone==='red'){cols=5;rows=2;}else{cols=4;rows=2;}
-        grid.style.gridTemplateColumns=`repeat(${cols},1fr)`;
-        grid.style.gridTemplateRows   =`repeat(${rows},1fr)`;
-        grid.innerHTML='';
-        files.forEach(f=>{const img=document.createElement('img');img.src=`images/strategies/${zone}/${f}`;grid.appendChild(img);});
+    document.querySelectorAll('.zone').forEach(zoneEl => {
+      zoneEl.addEventListener('click', () => {
+        const zone = zoneEl.dataset.zone;
+        titleEl.textContent = `${zone.charAt(0).toUpperCase() + zone.slice(1)} Zone Strategies`;
+        const files = strategies[zone];
+        let cols = (zone === 'green' ? 4 : (zone === 'red' ? 5 : 4));
+        let rows = Math.ceil(files.length/cols);
+        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        grid.style.gridTemplateRows    = `repeat(${rows}, 1fr)`;
+        grid.innerHTML = '';
+        files.forEach(f => {
+          const img = document.createElement('img');
+          img.src = `images/strategies/${zone}/${f}`;
+          grid.appendChild(img);
+        });
         overlay.classList.add('visible');
       });
     });
 
-    closeBtn.addEventListener('click',()=>overlay.classList.remove('visible'));
-    overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('visible');});
+    closeBtn.addEventListener('click', () => overlay.classList.remove('visible'));
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('visible'); });
   </script>
 </body>
 </html>
