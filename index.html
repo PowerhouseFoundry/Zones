@@ -1,14 +1,16 @@
-<!-- Current Working Version: Absolute-positioned strategy grid for reliable iPad display -->
+<!-- Current Working Version: Absolute-positioned strategy grid for reliable display on any device -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zones of Regulation Check-In</title>
   <style>
-    /* RESET */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
+    :root { --vh: 100vh; }
+    html, body {
+      height: 100%; margin: 0; padding: 0;
+      overflow: hidden; font-family: Arial, sans-serif;
+    }
     body { display: flex; flex-direction: column; }
 
     /* MAIN HEADER */
@@ -29,34 +31,24 @@
       flex: 1;
       display: grid;
       grid-template: repeat(2, 1fr) / repeat(2, 1fr);
-      gap: 4px;
-      padding: 4px;
+      gap: 4px; padding: 4px;
     }
     .zone {
-      background: #ddd;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      overflow: hidden;
-      padding: 8px;
+      background: #ddd; border-radius: 8px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer; overflow: hidden; padding: 8px;
     }
     .zone .label {
-      color: #fff;
-      font-size: 2rem;
-      font-weight: bold;
+      color: #fff; font-size: 2rem; font-weight: bold;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-      margin-bottom: 8px;
-      text-align: center;
+      margin-bottom: 8px; text-align: center;
     }
     .zone .images-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 4px;
-      width: 100%;
-      height: calc(100% - 3rem);
+      width: 100%; height: calc(100% - 3rem);
     }
     .zone img.face { width: 100%; height: 100%; object-fit: contain; }
     .zone.blue   { background: #00a2e8; }
@@ -66,13 +58,10 @@
 
     /* MODAL OVERLAY */
     #overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: var(--vh);
       background: rgba(0,0,0,0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
+      display: none; align-items: center; justify-content: center;
       z-index: 100;
     }
     #overlay.visible { display: flex; }
@@ -80,9 +69,8 @@
     /* MODAL CONTAINER */
     .modal {
       position: relative;
-      width: 100%; height: 100%;
-      background: #fff;
-      overflow: hidden;
+      width: 100%; height: var(--vh);
+      background: #fff; overflow: hidden;
     }
 
     /* MODAL HEADER */
@@ -91,13 +79,14 @@
       top: 0; left: 0; right: 0;
       height: 50px;
       background: #eee;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 0 8px;
     }
     .modal-header .logo { height: 30px; }
-    .modal-header h2 { flex: 1; text-align: center; font-size: 1.6rem; margin: 0; }
+    .modal-header h2 {
+      flex: 1; text-align: center;
+      font-size: 1.6rem; margin: 0;
+    }
     .modal-header button {
       background: #333; color: #fff;
       border: none; border-radius: 4px;
@@ -105,7 +94,7 @@
       cursor: pointer;
     }
 
-    /* STRATEGY GRID: absolute between header and bottom */
+    /* STRATEGY GRID: anchored between header and bottom */
     #strategy-grid {
       position: absolute;
       top: 50px; bottom: 0;
@@ -113,16 +102,23 @@
       display: grid;
       grid-auto-rows: 1fr;
       gap: 1px;
-      padding: 4px;
+      padding: 2px 4px;
       overflow: hidden;
     }
     #strategy-grid img { width: 100%; height: 100%; object-fit: contain; }
-
   </style>
+  <script>
+    // CSS variable for dynamic viewport height
+    function setVh() {
+      document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+    }
+    window.addEventListener('resize', setVh);
+    setVh();
+  </script>
 </head>
 <body>
   <header>
-    <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo">
+    <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo" />
     <h1>How are you feeling today?</h1>
   </header>
   <div class="zones-container">
@@ -146,7 +142,7 @@
   <div id="overlay">
     <div class="modal">
       <div class="modal-header">
-        <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo">
+        <img src="images/wsilc.jpg" alt="WSILC Logo" class="logo" />
         <h2 id="overlay-title">Zone Strategies</h2>
         <button id="close-btn">Back</button>
       </div>
@@ -154,34 +150,61 @@
     </div>
   </div>
   <script>
+    // Data
     const faces = {
-      blue:['blue1.png','blue2.png','blue3.png','blue4.png'],
-      green:['green1.png','green2.png','green3.png','green4.png'],
-      yellow:['yellow1.png','yellow2.png','yellow3.png','yellow4.png'],
-      red:['red1.png','red2.png','red3.png','red4.png']
+      blue: ['blue1.png','blue2.png','blue3.png','blue4.png'],
+      green: ['green1.png','green2.png','green3.png','green4.png'],
+      yellow: ['yellow1.png','yellow2.png','yellow3.png','yellow4.png'],
+      red: ['red1.png','red2.png','red3.png','red4.png']
     };
     const strategies = {
-      blue:['b-strat1.png','b-strat2.png','b-strat3.png','b-strat4.png','b-strat5.png','b-strat6.png','b-strat7.png','b-strat8.png'],
-      green:['g-strat1.png','g-strat2.png','g-strat3.png','g-strat4.png'],
-      yellow:['y-strat1.png','y-strat2.png','y-strat3.png','y-strat4.png','y-strat5.png','y-strat6.png','y-strat7.png','y-strat8.png'],
-      red:['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png','r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
+      blue: ['b-strat1.png','b-strat2.png','b-strat3.png','b-strat4.png','b-strat5.png','b-strat6.png','b-strat7.png','b-strat8.png'],
+      green: ['g-strat1.png','g-strat2.png','g-strat3.png','g-strat4.png'],
+      yellow: ['y-strat1.png','y-strat2.png','y-strat3.png','y-strat4.png','y-strat5.png','y-strat6.png','y-strat7.png','y-strat8.png'],
+      red: ['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png','r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
     };
-    // render faces
-    Object.entries(faces).forEach(([zone,files])=>{
+    
+    // Render face icons
+    Object.entries(faces).forEach(([zone, files]) => {
       const row = document.querySelector(`.zone.${zone} .images-row`);
-      files.forEach(f=>{const img=document.createElement('img');img.src=`images/${f}`;img.className='face';row.appendChild(img);});
+      files.forEach(f => {
+        const img = document.createElement('img');
+        img.src = `images/${f}`;
+        img.className = 'face';
+        row.appendChild(img);
+      });
     });
-    // modal
-    const overlay=document.getElementById('overlay'), titleEl=document.getElementById('overlay-title'), grid=document.getElementById('strategy-grid'), closeBtn=document.getElementById('close-btn');
-    document.querySelectorAll('.zone').forEach(z=>z.addEventListener('click',()=>{
-      const zone=z.dataset.zone; titleEl.textContent=`${zone.charAt(0).toUpperCase()+zone.slice(1)} Zone Strategies`; const files=strategies[zone];
-      let cols,rows; if(zone==='green'){cols=4;rows=1;}else if(zone==='red'){cols=5;rows=2;}else{cols=4;rows=2;}      
-      grid.style.gridTemplateColumns=`repeat(${cols},1fr)`; grid.style.gridTemplateRows=`repeat(${rows},1fr)`;
-      grid.innerHTML=''; files.forEach(f=>{const img=document.createElement('img');img.src=`images/strategies/${zone}/${f}`;grid.appendChild(img);});
-      overlay.classList.add('visible');
-    }));
-    closeBtn.addEventListener('click',()=>overlay.classList.remove('visible'));
-    overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('visible');});
+
+    // Modal logic
+    const overlay = document.getElementById('overlay'),
+          titleEl = document.getElementById('overlay-title'),
+          grid    = document.getElementById('strategy-grid'),
+          closeBtn= document.getElementById('close-btn');
+
+    document.querySelectorAll('.zone').forEach(zoneEl => {
+      zoneEl.addEventListener('click', () => {
+        const zone = zoneEl.dataset.zone;
+        titleEl.textContent = `${zone.charAt(0).toUpperCase() + zone.slice(1)} Zone Strategies`;
+        const files = strategies[zone];
+        let cols, rows;
+        if (zone === 'green') { cols = 4; rows = 1; }
+        else if (zone === 'red')   { cols = 5; rows = 2; }
+        else                       { cols = 4; rows = 2; }
+        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        grid.style.gridTemplateRows    = `repeat(${rows}, 1fr)`;
+        grid.innerHTML = '';
+        files.forEach(f => {
+          const img = document.createElement('img');
+          img.src = `images/strategies/${zone}/${f}`;
+          grid.appendChild(img);
+        });
+        overlay.classList.add('visible');
+      });
+    });
+    
+    // Close button
+    closeBtn.addEventListener('click', () => overlay.classList.remove('visible'));
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('visible'); });
   </script>
 </body>
 </html>
