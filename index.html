@@ -1,4 +1,4 @@
-<!-- Final Working Version: Use this as the canonical code for future updates -->
+<!-- Current Working Version: Stable baseline for future updates -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,8 +47,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      overflow: hidden;
       padding: 8px;
+      overflow: hidden;
     }
     .zone .label {
       color: #fff;
@@ -66,16 +66,14 @@
       height: calc(100% - 3rem);
     }
     .zone img.face {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      width: 100%; height: 100%; object-fit: contain;
     }
     .zone.blue { background: #00a2e8; }
     .zone.green { background: #79c143; }
     .zone.yellow { background: #f8e71c; }
     .zone.red { background: #d0021b; }
 
-    /* MODAL: grid-based layout */
+    /* MODAL OVERLAY */
     #overlay {
       position: fixed;
       top: 0; left: 0;
@@ -84,10 +82,11 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 0;
       z-index: 100;
     }
     #overlay.visible { display: flex; }
+
+    /* MODAL GRID LAYOUT */
     .modal {
       background: #fff;
       width: 100%; height: 100%;
@@ -116,14 +115,12 @@
     #strategy-grid {
       display: grid;
       width: calc(100% - 16px);
-      height: 100%;
       gap: 2px;
       padding: 0 8px;
+      grid-auto-rows: 1fr;
     }
     #strategy-grid img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      width: 100%; height: 100%; object-fit: contain;
     }
     .modal button {
       position: absolute;
@@ -162,6 +159,7 @@
       <div class="images-row"></div>
     </div>
   </div>
+
   <div id="overlay">
     <div class="modal">
       <div class="modal-header">
@@ -173,6 +171,7 @@
       <button id="close-btn">Back</button>
     </div>
   </div>
+
   <script>
     const faces = {
       blue: ['blue1.png','blue2.png','blue3.png','blue4.png'],
@@ -186,7 +185,8 @@
       yellow: ['y-strat1.png','y-strat2.png','y-strat3.png','y-strat4.png','y-strat5.png','y-strat6.png','y-strat7.png','y-strat8.png'],
       red: ['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png','r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
     };
-    // Render face images
+
+    // Render faces in each zone
     Object.entries(faces).forEach(([zone, files]) => {
       const row = document.querySelector(`.zone.${zone} .images-row`);
       files.forEach(f => {
@@ -196,11 +196,13 @@
         row.appendChild(img);
       });
     });
-    // Modal logic
+
+    // Modal functionality
     const overlay = document.getElementById('overlay');
     const titleEl = document.getElementById('overlay-title');
     const grid = document.getElementById('strategy-grid');
     const closeBtn = document.getElementById('close-btn');
+
     document.querySelectorAll('.zone').forEach(zoneEl => {
       zoneEl.addEventListener('click', () => {
         const zone = zoneEl.dataset.zone;
@@ -208,11 +210,11 @@
         const files = strategies[zone];
         let cols, rows;
         if (zone === 'green') {
-          cols = 4;
-          rows = 1;
+          cols = 4; rows = 1;
+        } else if (zone === 'red') {
+          cols = 5; rows = 2;
         } else {
-          cols = 4;
-          rows = 2;
+          cols = 4; rows = 2;
         }
         grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
@@ -225,6 +227,7 @@
         overlay.classList.add('visible');
       });
     });
+
     closeBtn.addEventListener('click', () => overlay.classList.remove('visible'));
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('visible'); });
   </script>
