@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zones of Regulation Check-In</title>
   <style>
     /* RESET */
@@ -186,7 +186,7 @@
       red: ['r-strat1.png','r-strat2.png','r-strat3.png','r-strat4.png','r-strat5.png','r-strat6.png','r-strat7.png','r-strat8.png','r-strat9.png']
     };
 
-    // Render faces in each zone
+    // Render faces
     Object.entries(faces).forEach(([zone, files]) => {
       const row = document.querySelector(`.zone.${zone} .images-row`);
       files.forEach(f => {
@@ -197,7 +197,7 @@
       });
     });
 
-    // Modal functionality
+    // Modal logic
     const overlay = document.getElementById('overlay');
     const titleEl = document.getElementById('overlay-title');
     const grid = document.getElementById('strategy-grid');
@@ -210,18 +210,19 @@
         const files = strategies[zone];
         let cols, rows;
         if (zone === 'green') {
-          cols = 4; rows = 1;
-        } else if (zone === 'red') {
-          cols = 5; rows = 2;
+          cols = 4;
+          rows = 1;
         } else {
-          cols = 4; rows = 2;
+          cols = 5;
+          rows = 2;
         }
         grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
         grid.innerHTML = '';
-        files.forEach(f => {
+        files.forEach((f, i) => {
           const img = document.createElement('img');
           img.src = `images/strategies/${zone}/${f}`;
+          // for red, ensure top row gets first 5
           grid.appendChild(img);
         });
         overlay.classList.add('visible');
