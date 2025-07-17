@@ -1,4 +1,4 @@
-<!-- Current Working Version: Optimized for iPad -->
+<!-- Current Working Version: Optimized for iPad with dynamic viewport height fix -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zones of Regulation Check-In</title>
   <style>
+    :root {
+      /* CSS variable for dynamic viewport height */
+      --vh: 100vh;
+    }
     /* RESET */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; font-family: Arial, sans-serif; }
+    html, body { height: var(--vh); overflow: hidden; font-family: Arial, sans-serif; }
     body { display: flex; flex-direction: column; }
 
     /* MAIN HEADER */
@@ -16,108 +20,92 @@
       position: relative;
       height: 50px;
       background: #333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
+      display: flex; align-items: center; justify-content: center;
     }
     header .logo { position: absolute; left: 8px; height: 40px; }
-    header h1 { font-size: 1.8rem; }
+    header h1 { color: #fff; font-size: 1.8rem; }
 
     /* ZONES GRID */
     .zones-container {
       flex: 1;
       display: grid;
       grid-template: repeat(2, 1fr) / repeat(2, 1fr);
-      gap: 4px;
-      padding: 4px;
+      gap: 4px; padding: 4px;
     }
     .zone {
-      background: #ccc;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: 8px;
-      overflow: hidden;
+      background: #ccc; border-radius: 8px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer; padding: 8px; overflow: hidden;
     }
     .zone .label {
-      color: #fff;
-      font-size: 2rem;
-      font-weight: bold;
+      color: #fff; font-size: 2rem; font-weight: bold;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-      margin-bottom: 8px;
-      text-align: center;
+      margin-bottom: 8px; text-align: center;
     }
     .zone .images-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 4px;
-      width: 100%;
-      height: calc(100% - 3rem);
+      width: 100%; height: calc(100% - 3rem);
     }
     .zone img.face { width: 100%; height: 100%; object-fit: contain; }
-    .zone.blue { background: #00a2e8; }
-    .zone.green { background: #79c143; }
+    .zone.blue   { background: #00a2e8; }
+    .zone.green  { background: #79c143; }
     .zone.yellow { background: #f8e71c; }
-    .zone.red { background: #d0021b; }
+    .zone.red    { background: #d0021b; }
 
     /* MODAL OVERLAY */
     #overlay {
       position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      width: 100vw; height: var(--vh);
       background: rgba(0,0,0,0.8);
       display: none;
-      align-items: center;
-      justify-content: center;
+      align-items: center; justify-content: center;
       z-index: 100;
     }
     #overlay.visible { display: flex; }
 
-    /* MODAL LAYOUT: 2 rows (header, content) */
+    /* MODAL LAYOUT */
     .modal {
       background: #fff;
-      width: 100%; height: 100%;
+      width: 100%; height: var(--vh);
       display: grid;
-      grid-template-rows: 56px 1fr;
+      grid-template-rows: auto 1fr auto;
       overflow: hidden;
+      position: relative;
     }
     .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 8px;
-      background: #eee;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 8px; background: #eee; height: 56px;
     }
     .modal-header .logo { height: 40px; }
     .modal-header h2 { font-size: 1.6rem; flex: 1; text-align: center; }
-    .modal-header .intro { display: none; }
-    /* Move Back button into header */
     .modal-header button {
-      background: #333;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      padding: 6px 12px;
-      font-size: 1rem;
-      cursor: pointer;
+      background: #333; color: #fff; border: none; border-radius: 4px;
+      padding: 6px 12px; font-size: 1rem; cursor: pointer;
     }
-    
-    /* STRATEGY GRID fills rest */
+
+    /* STRATEGY GRID */
     #strategy-grid {
       display: grid;
       width: calc(100% - 16px);
-      gap: 2px;
-      padding: 8px;
-      grid-auto-rows: 1fr;
+      gap: 2px; padding: 8px;
       overflow: hidden;
     }
-    #strategy-grid img {
-      width: 100%; height: 100%; object-fit: contain;
-    }
+    #strategy-grid img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* FOOTER for spacing (grid auto-rows handles placement) */
+    .modal-footer { height: 48px; }
   </style>
+  <!-- Dynamic viewport height script -->
+  <script>
+    function setVh() {
+      document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+    }
+    window.addEventListener('resize', setVh);
+    setVh();
+  </script>
 </head>
 <body>
   <header>
@@ -151,6 +139,7 @@
         <button id="close-btn">Back</button>
       </div>
       <div id="strategy-grid"></div>
+      <div class="modal-footer"></div>
     </div>
   </div>
 
@@ -173,17 +162,15 @@
       const row = document.querySelector(`.zone.${zone} .images-row`);
       files.forEach(f => {
         const img = document.createElement('img');
-        img.src = `images/${f}`;
-        img.className = 'face';
-        row.appendChild(img);
+        img.src = `images/${f}`; img.className = 'face'; row.appendChild(img);
       });
     });
 
-    // Modal logic
-    const overlay = document.getElementById('overlay'),
-          titleEl = document.getElementById('overlay-title'),
-          grid    = document.getElementById('strategy-grid'),
-          closeBtn= document.getElementById('close-btn');
+    // Modal show/hide logic
+    const overlay = document.getElementById('overlay');
+    const titleEl = document.getElementById('overlay-title');
+    const grid    = document.getElementById('strategy-grid');
+    const closeBtn= document.getElementById('close-btn');
 
     document.querySelectorAll('.zone').forEach(zoneEl => {
       zoneEl.addEventListener('click', () => {
@@ -192,7 +179,7 @@
         const files = strategies[zone];
         let cols, rows;
         if (zone === 'green') { cols = 4; rows = 1; }
-        else if(zone === 'red') { cols = 5; rows = 2; }
+        else if (zone === 'red') { cols = 5; rows = 2; }
         else { cols = 4; rows = 2; }
         grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         grid.style.gridTemplateRows    = `repeat(${rows}, 1fr)`;
@@ -207,7 +194,7 @@
     });
 
     closeBtn.addEventListener('click', () => overlay.classList.remove('visible'));
-    overlay.addEventListener('click', e => { if(e.target===overlay) overlay.classList.remove('visible'); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('visible'); });
   </script>
 </body>
 </html>
